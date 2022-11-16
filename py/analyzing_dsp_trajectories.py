@@ -18,7 +18,7 @@ import glob
 
 # Excluded subjects
 # See experimenter sheet.
-excluded = []
+excluded = ["11017", "11001"]
 
 # Find the directory containing this file
 base_dir = os.path.dirname(os.path.realpath(__file__))
