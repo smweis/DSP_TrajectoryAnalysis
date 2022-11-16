@@ -24,10 +24,9 @@ excluded = []
 base_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Where are the data
-traj_dir = os.path.join(base_dir, "..", "..", "..", "DSP_Trajectories")
+traj_dir = os.path.join(base_dir, "..", "..", "DSP_Trajectories")
 success_dir = os.path.join(
     base_dir,
-    "..",
     "..",
     "..",
     "DSP_RawData",
@@ -58,9 +57,9 @@ for i in range(len(input_files)):
 
 success_df["success"] = np.where(success_df["Status"] == "Success", 1, 0)
 # A few wonky participant numbers.
-success_df["ParticipantNo"].replace(
-    ["12002_2", 210012, "21002_2"], ["12002", "21001", "21002"], inplace=True
-)
+# success_df["ParticipantNo"].replace(
+#    ["12002_2", 210012, "21002_2"], ["12002", "21001", "21002"], inplace=True
+# )
 
 # Groupby a few key variables.
 def f(df):
@@ -85,7 +84,7 @@ def f(df):
 
 
 success_wide = success_df.groupby(["ParticipantNo", "DSPType"], as_index=False).apply(f)
-
+success_wide.reset_index(drop=True,inplace=True)
 # Make sure no one has duplicated data.
 success_wide = success_wide[success_wide["total_trials"] < 40]
 
@@ -100,9 +99,9 @@ success_wide = success_wide.merge(
 traj_df = pd.read_csv(os.path.join(traj_dir, "frechet_by_trial.csv"))
 
 # Wonky subjects.
-traj_df["subject"].replace(
-    [120022, 210012, 210022], [12002, 21001, 21002], inplace=True
-)
+# traj_df["subject"].replace(
+#    [120022, 210012, 210022], [12002, 21001, 21002], inplace=True
+# )
 
 # Remove topological strategy
 traj_df.drop(["Top"], axis=1, inplace=True)
@@ -149,6 +148,7 @@ all_df = success_wide.merge(
     traj_wide, left_on=["ParticipantNo", "DSPType"], right_on=["subject", "dspVersion"]
 )
 
+all_df.to_csv(os.path.join(base_dir, "..", "..", "..","subj_level_output.csv"))
 ## Plots
 
 plt.figure()
